@@ -192,6 +192,50 @@
     bottom: 0;
   }
 
+  .subtitle:has(.quick-reply-button) {
+    position: relative;
+  }
+
+  // Takes the place of the badges on hover, so the unread count turns into a way to answer it
+  .quick-reply-button {
+    pointer-events: none;
+    cursor: var(--custom-cursor, pointer);
+
+    position: absolute;
+    z-index: var(--z-badge);
+    inset-inline-end: 0;
+    top: 50%;
+    transform: translateY(-50%);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+
+    color: var(--color-primary);
+
+    opacity: 0;
+    background-color: var(--color-primary-opacity);
+
+    // Hovering the list happens all day, so the reveal is a quick fade without movement
+    transition:
+      opacity 100ms ease,
+      color 150ms ease,
+      background-color 150ms ease,
+      transform 100ms cubic-bezier(0.23, 1, 0.32, 1);
+
+    &:active {
+      transform: translateY(-50%) scale(0.92);
+    }
+
+    .icon {
+      font-size: 1rem;
+    }
+  }
+
   .avatar-badge {
     --_color-outline: var(--color-background);
 
@@ -384,6 +428,23 @@
         padding-left: 0.5rem;
         text-align: right;
       }
+    }
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover .quick-reply-button,
+    .quick-reply-button:focus-visible {
+      pointer-events: auto;
+      opacity: 1;
+    }
+
+    &:hover .subtitle:has(.quick-reply-button) .chat-badge-transition {
+      opacity: 0;
+    }
+
+    .quick-reply-button:hover {
+      color: var(--color-white);
+      background-color: var(--color-primary);
     }
   }
 

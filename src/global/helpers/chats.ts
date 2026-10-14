@@ -186,6 +186,11 @@ export function getCanPostInChat(
   return isChatAdmin(chat) || !isUserRightBanned(chat, 'sendMessages', chatFullInfo);
 }
 
+// Quick Reply has no topic or community picker, so it covers plain chats the user can write to
+export function getCanQuickReply(chat: ApiChat) {
+  return !chat.isForum && !isChatCommunity(chat) && getCanPostInChat(chat);
+}
+
 export interface IAllowedAttachmentOptions {
   canAttachMedia: boolean;
   canAttachPolls: boolean;

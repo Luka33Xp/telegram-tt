@@ -31,6 +31,9 @@ function handleWorkerMessage(e: MessageEvent) {
     case 'focusMessage':
       dispatch.focusMessage?.(payload as any);
       break;
+    case 'openQuickReply':
+      dispatch.openQuickReply?.({ chatId: payload.chatId });
+      break;
     case 'playNotificationSound':
       playNotifySoundDebounced(action.payload.id);
       break;

@@ -2110,6 +2110,8 @@ export interface LangPair {
   'ConfirmBuyGiftForGramDescription': undefined;
   'TitleGiftLocked': undefined;
   'QuickPreview': undefined;
+  'QuickReply': undefined;
+  'QuickReplyOpenChat': undefined;
   'BotForumContinueThreadButton': undefined;
   'HeaderMenuViewProfile': undefined;
   'HeaderMenuViewGroupInfo': undefined;
@@ -4007,6 +4009,9 @@ export interface LangPairWithVariables<V = LangVariable> {
   };
   'GiftLockedMessage': {
     'relativeDate': V;
+  };
+  'QuickReplyPlaceholder': {
+    'name': V;
   };
   'ActionStarGiftPrepaidUpgraded': {
     'user': V;

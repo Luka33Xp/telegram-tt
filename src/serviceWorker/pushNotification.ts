@@ -33,6 +33,7 @@ type NotificationData = {
   icon?: string;
   reaction?: string;
   shouldReplaceHistory?: boolean;
+  replyActionTitle?: string;
 };
 
 type FocusMessageData = {
@@ -46,6 +47,8 @@ type CloseNotificationData = {
   lastReadInboxMessageId?: number;
   chatId: string;
 };
+
+const REPLY_ACTION = 'reply';
 
 let lastSyncAt = new Date().valueOf();
 const shownNotifications = new Set();
@@ -123,6 +126,7 @@ function showNotification({
   reaction,
   isSilent,
   shouldReplaceHistory,
+  replyActionTitle,
 }: NotificationData) {
   const isFirstBatch = new Date().valueOf() - lastSyncAt < 1000;
   const tag = String(isFirstBatch ? 0 : chatId || 0);
@@ -140,6 +144,8 @@ function showNotification({
     tag,
     // @ts-ignore
     vibrate: [200, 100, 200],
+    // @ts-ignore Notification actions are missing from the DOM typings
+    actions: replyActionTitle ? [{ action: REPLY_ACTION, title: replyActionTitle }] : undefined,
   };
 
   return Promise.all([
@@ -210,11 +216,38 @@ async function focusChatMessage(client: WindowClient, data: FocusMessageData) {
   }
 }
 
+async function openQuickReply(client: WindowClient, chatId: string) {
+  client.postMessage({
+    type: 'openQuickReply',
+    payload: { chatId },
+  });
+  if (!client.focused) {
+    // Catch "focus not allowed" DOM Exceptions
+    try {
+      await client.focus();
+    } catch (error) {
+      if (DEBUG) {
+        // eslint-disable-next-line no-console
+        console.warn('[SW] ', error);
+      }
+    }
+  }
+}
+
 export function handleNotificationClick(e: NotificationEvent) {
   const appUrl = self.registration.scope;
   e.notification.close(); // Android needs explicit close.
   const { data } = e.notification;
+  const isReply = e.action === REPLY_ACTION && data.chatId !== undefined;
   const notifyClients = async () => {
+    // A reply goes to the most recently focused tab, without one it falls back to opening the chat
+    if (isReply) {
+      const [lastFocusedClient] = await getClients();
+      if (lastFocusedClient) {
+        await openQuickReply(lastFocusedClient, data.chatId);
+        return undefined;
+      }
+    }
     const clients = await getClients();
     await Promise.all(clients.map((client) => {
       clickBuffer[client.id] = data;

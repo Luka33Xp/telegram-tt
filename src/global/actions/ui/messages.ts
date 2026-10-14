@@ -3,7 +3,7 @@ import type {
   ActionReturnType,
 } from '../../types';
 import { MAIN_THREAD_ID } from '../../../api/types';
-import { type ActiveDownloads, FocusDirection } from '../../../types';
+import { type ActiveDownloads, FocusDirection, LeftColumnContent } from '../../../types';
 
 import {
   ANIMATION_END_DELAY,
@@ -53,6 +53,7 @@ import {
   selectForwardedMessageIdsByGroupId,
   selectIsRightColumnShown,
   selectIsViewportNewest,
+  selectLeftColumnContentKey,
   selectMessageIdsByGroupId,
   selectRequestedChatTranslationLanguage,
   selectRequestedMessageTranslationLanguage,
@@ -1264,5 +1265,30 @@ addActionHandler('closeQuickPreview', (global, actions, payload): ActionReturnTy
 
   return updateTabState(global, {
     quickPreview: undefined,
+  }, tabId);
+});
+
+addActionHandler('openQuickReply', (global, actions, payload): ActionReturnType => {
+  const { chatId, tabId = getCurrentTabId() } = payload;
+
+  // The card lives in the chat list, so without one on screen the chat opens instead
+  const leftColumnContentKey = selectLeftColumnContentKey(global, tabId);
+  const isChatListShown = leftColumnContentKey === LeftColumnContent.ChatList
+    || leftColumnContentKey === LeftColumnContent.Archived;
+  if (getIsMobile() || !isChatListShown) {
+    actions.openChat({ id: chatId, shouldReplaceHistory: true, tabId });
+    return undefined;
+  }
+
+  return updateTabState(global, {
+    quickReply: { chatId },
+  }, tabId);
+});
+
+addActionHandler('closeQuickReply', (global, actions, payload): ActionReturnType => {
+  const { tabId = getCurrentTabId() } = payload || {};
+
+  return updateTabState(global, {
+    quickReply: undefined,
   }, tabId);
 });

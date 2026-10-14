@@ -25,6 +25,7 @@ import { StoryViewerOrigin, type TopicsInfo } from '../../../types';
 
 import { ALL_FOLDER_ID, UNMUTE_TIMESTAMP } from '../../../config';
 import {
+  getCanQuickReply,
   getPeerColorKey,
   groupStatefulContent,
   isChatCommunity,
@@ -116,6 +117,7 @@ type OwnProps = {
 
 type StateProps = {
   chat?: ApiChat;
+  canQuickReplyToChat?: boolean;
   monoforumChannel?: ApiChat;
   lastMessageStory?: ApiTypeStory;
   topicsInfo?: TopicsInfo;
@@ -194,6 +196,7 @@ const Chat = ({
   noCommunityChevron,
   isInCommunityPanel,
   isFoldersSidebarShown,
+  canQuickReplyToChat,
   onReorderAnimationEnd,
 }: OwnProps & StateProps) => {
   const {
@@ -209,6 +212,7 @@ const Chat = ({
     openFrozenAccountModal,
     updateChatMutedState,
     openQuickPreview,
+    openQuickReply,
     scrollMessageListToBottom,
     openCommunityPanel,
   } = getActions();
@@ -397,6 +401,24 @@ const Chat = ({
     reportMessages({ chatId: chat.id, messageIds: [] });
   });
 
+  const canQuickReply = Boolean(
+    canQuickReplyToChat && !isPreview && !isSavedDialog && !isInCommunityPanel && !isSelected,
+  );
+
+  const handleQuickReply = useLastCallback(() => {
+    openQuickReply({ chatId });
+  });
+
+  // Same fast-click phase as the row, see the chevron above
+  const {
+    handleClick: handleQuickReplyClick,
+    handleMouseDown: handleQuickReplyMouseDown,
+  } = useFastClick((e: React.MouseEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    handleQuickReply();
+  });
+
   const contextActions = useChatContextActions({
     chat,
     user,
@@ -405,6 +427,7 @@ const Chat = ({
     handleUnmute,
     handleChatFolderChange,
     handleReport,
+    handleQuickReply: canQuickReply ? handleQuickReply : undefined,
     folderId,
     isPinned,
     isMuted,
@@ -574,6 +597,18 @@ const Chat = ({
               transitionClassName="chat-badge-transition"
             />
           )}
+          {canQuickReply && (
+            <div
+              className="quick-reply-button"
+              role="button"
+              tabIndex={0}
+              aria-label={lang('QuickReply')}
+              onClick={handleQuickReplyClick}
+              onMouseDown={handleQuickReplyMouseDown}
+            >
+              <Icon name="reply" />
+            </div>
+          )}
         </div>
         {shouldRenderTags && (
           <ChatTags
@@ -617,6 +652,20 @@ type CommunitySummary = {
   members: CommunityMember[];
   unreadChatsCount: number;
 };
+
+// Rows recompute their state on every global update, while the answer only changes with the chat.
+// A chat gets a new object whenever it changes, so the object is a safe cache key.
+const canQuickReplyByChat = new WeakMap<ApiChat, boolean>();
+
+function getCanQuickReplyCached(chat: ApiChat) {
+  let canQuickReply = canQuickReplyByChat.get(chat);
+  if (canQuickReply === undefined) {
+    canQuickReply = getCanQuickReply(chat);
+    canQuickReplyByChat.set(chat, canQuickReply);
+  }
+
+  return canQuickReply;
+}
 
 // A community row derives from its member chats: the subtitle lists their names
 // (freshest first, highlighting unmuted unread ones) and the badge counts all
@@ -728,6 +777,7 @@ export default memo(withGlobal<OwnProps>(
 
     return {
       chat,
+      canQuickReplyToChat: getCanQuickReplyCached(chat),
       communityMembers: communitySummary?.members,
       communityUnreadCount: communitySummary?.unreadChatsCount,
       isMuted: getIsChatMuted(chat, selectNotifyDefaults(global), selectNotifyException(global, chat.id)),

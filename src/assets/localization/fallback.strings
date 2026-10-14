@@ -2854,6 +2854,9 @@
 "TitleGiftLocked" = "Gift Locked";
 "GiftLockedMessage" = "This gift is currently only available to earlier Telegram users. It will unlock for your account in about **{relativeDate}**.";
 "QuickPreview" = "Quick Preview";
+"QuickReply" = "Quick Reply";
+"QuickReplyPlaceholder" = "Reply to {name}";
+"QuickReplyOpenChat" = "Open Chat";
 "BotForumContinueThreadButton" = "Continue Last Thread";
 "HeaderMenuViewProfile" = "View profile";
 "HeaderMenuViewGroupInfo" = "View group info";

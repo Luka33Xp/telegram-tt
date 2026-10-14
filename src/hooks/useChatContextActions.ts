@@ -35,6 +35,7 @@ const useChatContextActions = ({
   handleUnmute,
   handleChatFolderChange,
   handleReport,
+  handleQuickReply,
 }: {
   chat: ApiChat | undefined;
   user: ApiUser | undefined;
@@ -52,6 +53,7 @@ const useChatContextActions = ({
   handleUnmute?: NoneToVoidFunction;
   handleChatFolderChange: NoneToVoidFunction;
   handleReport?: NoneToVoidFunction;
+  handleQuickReply?: NoneToVoidFunction;
 }, isInSearch = false) => {
   const {
     toggleChatPinned,
@@ -141,6 +143,12 @@ const useChatContextActions = ({
           id: chat.id,
         });
       },
+    } satisfies MenuItemContextAction;
+
+    const actionQuickReply = handleQuickReply && {
+      title: lang('QuickReply'),
+      icon: 'reply',
+      handler: handleQuickReply,
     } satisfies MenuItemContextAction;
 
     const togglePinned = () => {
@@ -238,6 +246,7 @@ const useChatContextActions = ({
     return compact<MenuItemContextAction>([
       actionOpenInNewTab,
       actionQuickPreview,
+      actionQuickReply,
       canManageListPlacement && actionAddToFolder,
       actionMarkAsRead,
       actionMarkAsUnread,
@@ -251,7 +260,7 @@ const useChatContextActions = ({
     chat, isPreview, lang, isSavedDialog, isResolvedPinned, deleteTitle, handleDelete, canChangeFolder,
     handleChatFolderChange, isMuted, handleUnmute, handleMute, isInSearch, chatReadState, topicsReadStates,
     handleReport, user, folderId, isSelf, isServiceNotifications, currentUserId, isInCommunityPanel,
-    isLinkedCommunityCollapsed,
+    isLinkedCommunityCollapsed, handleQuickReply,
   ]);
 
   return preparedActions;

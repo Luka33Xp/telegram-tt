@@ -13,11 +13,13 @@ import {
   CHAT_LIST_SLICE,
   SAVED_FOLDER_ID,
 } from '../../../config';
+import { selectTabState } from '../../../global/selectors';
 import { IS_APP, IS_MAC_OS } from '../../../util/browser/windowEnvironment';
 import buildClassName from '../../../util/buildClassName';
 import { getOrderKey, getPinnedChatsCount } from '../../../util/folderManager';
 import { ARCHIVE_ANIMATION_ID } from './hooks';
 
+import useSelector from '../../../hooks/data/useSelector';
 import usePeerStoriesPolling from '../../../hooks/polling/usePeerStoriesPolling';
 import useTopOverscroll from '../../../hooks/scroll/useTopOverscroll';
 import { useFolderManagerForOrderedIds } from '../../../hooks/useFolderManager';
@@ -25,6 +27,7 @@ import { useHotkeys } from '../../../hooks/useHotkeys';
 import useInfiniteScroll from '../../../hooks/useInfiniteScroll';
 import { useIntersectionObserver } from '../../../hooks/useIntersectionObserver';
 import useLastCallback from '../../../hooks/useLastCallback';
+import { useStateRef } from '../../../hooks/useStateRef';
 import useOrderDiff from './hooks/useOrderDiff';
 
 import InfiniteScroll from '../../ui/InfiniteScroll';
@@ -33,6 +36,7 @@ import Archive from './Archive';
 import Chat from './Chat';
 import EmptyFolder from './EmptyFolder';
 import ChatListPanes from './panes/ChatListPanes';
+import QuickReply from './QuickReply';
 
 type OwnProps = {
   className?: string;
@@ -57,6 +61,10 @@ type OwnProps = {
 
 const INTERSECTION_THROTTLE = 200;
 const RESERVED_HOTKEYS = new Set(['9', '0']);
+
+function selectQuickReplyChatId(global: GlobalState) {
+  return selectTabState(global).quickReply?.chatId;
+}
 
 const ChatList = ({
   className,
@@ -88,6 +96,7 @@ const ChatList = ({
   } = getActions();
   const containerRef = useRef<HTMLDivElement>();
   const [panesHeight, setPanesHeight] = useState(0);
+  const [renderedQuickReplyChatId, setRenderedQuickReplyChatId] = useState<string | undefined>();
 
   const isArchived = folderType === 'archived';
   const isAllFolder = folderType === 'all';
@@ -171,6 +180,20 @@ const ChatList = ({
     openLeftColumnContent({ contentKey: LeftColumnContent.Archived });
     closeForumPanel();
     closeCommunityPanel();
+  });
+
+  // Only the list on screen hosts the card
+  const quickReplyChatId = useSelector(selectQuickReplyChatId);
+  const openQuickReplyChatId = isActive ? quickReplyChatId : undefined;
+  const openQuickReplyChatIdRef = useStateRef(openQuickReplyChatId);
+
+  useEffect(() => {
+    if (openQuickReplyChatId) setRenderedQuickReplyChatId(openQuickReplyChatId);
+  }, [openQuickReplyChatId]);
+
+  // The card stays mounted while it folds away, unless it was reopened in the meantime
+  const handleQuickReplyCloseAnimationEnd = useLastCallback(() => {
+    if (!openQuickReplyChatIdRef.current) setRenderedQuickReplyChatId(undefined);
   });
 
   const handleShowStoryRibbon = useLastCallback(() => {
@@ -261,6 +284,15 @@ const ChatList = ({
         )
       ) : (
         <Loading key="loading" />
+      )}
+      {renderedQuickReplyChatId && (
+        <QuickReply
+          key={`quick-reply-${renderedQuickReplyChatId}`}
+          chatId={renderedQuickReplyChatId}
+          container={containerRef.current!}
+          isOpen={renderedQuickReplyChatId === openQuickReplyChatId}
+          onCloseAnimationEnd={handleQuickReplyCloseAnimationEnd}
+        />
       )}
     </InfiniteScroll>
   );

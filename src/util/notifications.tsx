@@ -9,6 +9,7 @@ import { ApiMediaFormat } from '../api/types';
 
 import { APP_NAME, DEBUG, IS_TEST } from '../config';
 import {
+  getCanQuickReply,
   getChatAvatarHash,
   getChatTitle,
   getMessageRecentReaction,
@@ -482,6 +483,9 @@ export async function notifyAboutMessage({
           shouldReplaceHistory: true,
           isSilent: isSilent || message.isSilent,
           reaction: activeReaction?.reaction,
+          // The Reply button opens Quick Reply in the chat list, which needs a desktop layout
+          replyActionTitle: !isReaction && !IS_TOUCH_ENV && getCanQuickReply(chat)
+            ? getTranslationFn()('Reply') : undefined,
         },
       });
     }

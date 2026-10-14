@@ -1128,6 +1128,10 @@ export type TabState = {
     threadId?: ThreadId;
   };
 
+  quickReply?: {
+    chatId: string;
+  };
+
   isPasskeyModalOpen?: boolean;
 
   leaveGroupModal?: {

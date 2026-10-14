@@ -2945,6 +2945,11 @@ export interface ActionPayloads {
   } & WithTabId;
   closeQuickPreview: WithTabId | undefined;
 
+  openQuickReply: {
+    chatId: string;
+  } & WithTabId;
+  closeQuickReply: WithTabId | undefined;
+
   openDeleteMessageModal: ({
     chatId: string;
     messageIds: number[];
