@@ -85,7 +85,7 @@ class TelegramClient {
     }).catch(() => this.loadScenario());
   }
 
-  fireUpdate(update: Api.TypeUpdate) {
+  fireUpdate(update: Api.TypeUpdate | Api.TypeUpdates) {
     this.callbacks.forEach(({ eventBuilder, callback }) => (callback(eventBuilder.build(update))));
   }
 
@@ -97,12 +97,13 @@ class TelegramClient {
     return this.mockData.dialogs[type].map((dialog) => createMockedDialog(dialog.id, this.mockData));
   }
 
-  start({
+  async start({
     mockScenario,
   }: {
     mockScenario: string;
-  }) {
-    return this.loadScenario(mockScenario);
+  }, onConnected?: NoneToVoidFunction) {
+    await this.loadScenario(mockScenario);
+    onConnected?.();
   }
 
   async invoke<A, R>(request: Api.Request<A, R>) {
@@ -416,6 +417,8 @@ class TelegramClient {
   public setPingCallback() {}
 
   public setShouldDebugExportedSenders() {}
+
+  public setIsPremium() {}
 
   public isConnected() {
     return true;

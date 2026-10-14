@@ -1,0 +1,74 @@
+{
+    "users": [
+        { "id": "1", "self": true, "firstName": "Sam", "lastName": "Taylor" },
+        { "id": "101", "firstName": "Maya", "lastName": "Chen", "contact": true, "mutualContact": true, "isOnline": true },
+        { "id": "102", "firstName": "Mom", "lastName": "", "contact": true, "mutualContact": true, "isOnline": true },
+        { "id": "103", "firstName": "Daniel", "lastName": "Okafor", "contact": true, "mutualContact": true, "isOnline": true },
+        { "id": "104", "firstName": "Sofia", "lastName": "Martins", "contact": true, "mutualContact": true },
+        { "id": "105", "firstName": "Kenji", "lastName": "Watanabe", "contact": true, "mutualContact": true },
+        { "id": "106", "firstName": "Lina", "lastName": "Haddad", "contact": true, "mutualContact": true },
+        { "id": "107", "firstName": "Alex", "lastName": "Rivera", "contact": true, "mutualContact": true }
+    ],
+    "chats": [],
+    "channels": [],
+    "dialogs": {
+        "active": [
+            { "id": "101" },
+            { "id": "102", "unreadCount": 2 },
+            { "id": "103", "unreadCount": 1 },
+            { "id": "104" },
+            { "id": "105" },
+            { "id": "106" },
+            { "id": "107" },
+            { "id": "1" }
+        ],
+        "archived": []
+    },
+    "messages": {
+        "101": [
+            { "id": 1, "date": -1500, "message": "Morning! Did you get a chance to look at the onboarding flow?" },
+            { "id": 2, "date": -1440, "out": true, "message": "Yes, going through it now" },
+            { "id": 3, "date": -1380, "message": "The second screen feels a bit crowded to me" },
+            { "id": 4, "date": -1320, "message": "Maybe we drop the illustration and keep just the headline?" },
+            { "id": 5, "date": -1200, "out": true, "message": "Agree. The headline does all the work anyway" },
+            { "id": 6, "date": -1140, "out": true, "message": "Also the primary button sits too close to the progress dots" },
+            { "id": 7, "date": -1080, "message": "Good catch 👀" },
+            { "id": 8, "date": -900, "message": "Can you leave comments right in the file? I'll fix everything after lunch" },
+            { "id": 9, "date": -120, "out": true, "message": "On it — writing them up now ✍️" }
+        ],
+        "102": [
+            { "id": 10, "date": -86400, "message": "Call me when you're free" },
+            { "id": 11, "date": -86000, "out": true, "message": "Will do, busy day today 🙈" },
+            { "id": 12, "date": -240, "message": "Are you coming for dinner on Sunday?" },
+            { "id": 13, "date": -200, "message": "I'm making your favourite 🍲" }
+        ],
+        "103": [
+            { "id": 14, "date": -7200, "out": true, "message": "Booked a table at Lumière for tonight" },
+            { "id": 15, "date": -7000, "message": "Nice!! 🙌" },
+            { "id": 16, "date": -720, "message": "Still on for 7?" }
+        ],
+        "104": [
+            { "id": 17, "date": -4000, "out": true, "message": "Saturday was so much fun" },
+            { "id": 18, "date": -3600, "message": "Sent you the photos from Saturday 📸" }
+        ],
+        "105": [
+            { "id": 19, "date": -11000, "out": true, "message": "Honestly the sequel was better than the first one" },
+            { "id": 20, "date": -10800, "message": "haha that's exactly what I said" }
+        ],
+        "106": [
+            { "id": 21, "date": -90000, "out": true, "message": "Glad it worked out!" },
+            { "id": 22, "date": -88000, "message": "Thanks again for the help!" }
+        ],
+        "107": [
+            { "id": 23, "date": -100000, "message": "Can you send me the deck from Friday?" },
+            { "id": 24, "date": -99000, "out": true, "message": "Sure, sending it in a bit" }
+        ],
+        "1": [
+            { "id": 25, "date": -180000, "out": true, "message": "Idea: reply to chats right from the chat list" }
+        ]
+    },
+    "availableReactions": [],
+    "dialogFilters": [],
+    "documents": [],
+    "topPeers": []
+}
